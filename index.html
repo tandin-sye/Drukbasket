@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Drukbasket – Grocery delivery</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f8f3;--card:#fff;--ink:#1c2a21;--mute:#5e6e63;--line:#dbe3d6;--green:#2c6b3e;--onGreen:#fff;--gold:#f0b429;--onGold:#2a1f00;--red:#b3341f;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121a15;--card:#1a251d;--ink:#e8efe6;--mute:#9db0a2;--line:#2c3b30;--green:#5fb078;--onGreen:#0b1a10;--gold:#f0b429;--red:#ff8a73;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121a15;--card:#1a251d;--ink:#e8efe6;--mute:#9db0a2;--line:#2c3b30;--green:#5fb078;--onGreen:#0b1a10;--red:#ff8a73;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.45 Figtree,system-ui,sans-serif;padding-bottom:84px}
+h1,h2,h3{font-family:"Bricolage Grotesque",Figtree,system-ui,sans-serif;margin:0}
+.wrap{max-width:640px;margin:0 auto;padding:0 16px}
+header{padding:20px 0 12px}
+header h1{font-size:30px;letter-spacing:-.5px;color:var(--green)}
+header p{margin:4px 0 0;color:var(--mute)}
+.pill{display:inline-block;background:var(--gold);color:var(--onGold);font-weight:600;font-size:14px;padding:4px 10px;border-radius:999px;margin-top:10px}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:11px 12px}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:3px solid var(--gold);outline-offset:1px}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:12px 0}
+.tab{flex:none;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 14px;font:600 14px Figtree,sans-serif;cursor:pointer}
+.tab[aria-pressed=true]{background:var(--green);color:var(--onGreen);border-color:var(--green)}
+.item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.ico{font-size:34px;width:52px;height:52px;display:grid;place-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;flex:none}
+.item .t{flex:1;min-width:0}
+.item b{display:block}
+.item small{color:var(--mute)}
+.stock{color:var(--red)}
+.qty{display:flex;align-items:center;gap:8px}
+.qty button,.add{border:0;cursor:pointer;font:600 15px Figtree,sans-serif}
+.qty button{width:34px;height:34px;border-radius:50%;background:var(--green);color:var(--onGreen);font-size:18px}
+.add{background:var(--green);color:var(--onGreen);padding:8px 16px;border-radius:999px}
+.add:disabled{background:var(--line);color:var(--mute);cursor:not-allowed}
+.bar{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:1px solid var(--line)}
+.bar button{display:flex;width:100%;max-width:608px;margin:0 auto;justify-content:space-between;border:0;border-radius:14px;padding:15px 18px;background:var(--green);color:var(--onGreen);font:600 16px Figtree,sans-serif;cursor:pointer}
+.bar button:disabled{background:var(--line);color:var(--mute)}
+.sheet{position:fixed;inset:0;background:var(--bg);overflow-y:auto;padding:calc(16px + env(safe-area-inset-top,0px)) 0 40px;display:none;z-index:5}
+.sheet.open{display:block}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.link{background:none;border:0;color:var(--green);font:600 16px Figtree,sans-serif;cursor:pointer;padding:8px 0}
+label{display:block;font-weight:600;font-size:14px;margin:14px 0 6px}
+.row{display:flex;justify-content:space-between;padding:4px 0}
+.total{font:700 20px "Bricolage Grotesque",sans-serif;border-top:1px solid var(--line);margin-top:8px;padding-top:10px}
+.opt{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);background:var(--card);border-radius:10px;margin-top:8px}
+.opt input{width:auto}
+.err{color:var(--red);font-weight:600;margin-top:10px}
+.cta{display:block;width:100%;margin-top:18px;border:0;border-radius:14px;padding:15px;background:var(--green);color:var(--onGreen);font:600 16px Figtree,sans-serif;cursor:pointer;text-align:center;text-decoration:none}
+.ok{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:12px}
+pre{white-space:pre-wrap;font:14px/1.5 Figtree,sans-serif;margin:8px 0 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Drukbasket</h1>
+    <p>Groceries delivered to your door in Thimphu and Paro.</p>
+    <span class="pill">Order by 4 pm for same-day delivery</span>
+    <p style="font-size:14px">Tip: add this page to your home screen to open it like an app.</p>
+  </header>
+  <input id="q" type="search" placeholder="Search salt, oil, chilli…" aria-label="Search products">
+  <div class="tabs" id="tabs" role="group" aria-label="Categories"></div>
+  <div id="list"></div>
+</div>
+
+<div class="bar"><button id="open" disabled><span id="cnt">Your basket is empty</span><span id="sub"></span></button></div>
+
+<section class="sheet" id="sheet" aria-label="Checkout">
+  <div class="wrap">
+    <div class="top"><h2>Your order</h2><button class="link" id="close">Back to shop</button></div>
+    <div id="lines"></div>
+    <div id="sums"></div>
+
+    <div id="form">
+      <label for="name">Full name</label><input id="name" autocomplete="name">
+      <label for="phone">Phone number</label><input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="17 xx xx xx">
+      <label for="town">Town</label>
+      <select id="town"><option>Thimphu</option><option>Paro</option></select>
+      <label for="addr">Delivery address</label>
+      <textarea id="addr" rows="3" placeholder="Building, street, landmark"></textarea>
+      <label for="slot">Delivery slot</label>
+      <select id="slot"><option>Today, 5–7 pm</option><option>Tomorrow, 9–11 am</option><option>Tomorrow, 5–7 pm</option></select>
+      <label>Payment</label>
+      <label class="opt"><input type="radio" name="pay" value="Cash on delivery" checked> Cash on delivery</label>
+      <label class="opt"><input type="radio" name="pay" value="mBoB / mPay transfer"> Pay by mBoB or mPay (send screenshot on WhatsApp)</label>
+      <div class="err" id="err" role="alert"></div>
+      <button class="cta" id="place">Place order</button>
+    </div>
+
+    <div id="done" hidden>
+      <div class="ok">
+        <h3>Order ready to send</h3>
+        <p>Tap the button to send it to our team on WhatsApp. We confirm by phone before delivery.</p>
+        <pre id="summary"></pre>
+      </div>
+      <a class="cta" id="wa" target="_blank" rel="noopener">Send order on WhatsApp</a>
+      <button class="link" id="again">Start a new order</button>
+    </div>
+  </div>
+</section>
+
+<script>
+// ---- Edit these for your pilot ----
+var SHOP_WHATSAPP = "97577699403"; // your number, country code first, no +
+var MIN_ORDER = 100;               // Nu
+var FREE_OVER = 1500;              // free delivery above this
+var FEES = {Thimphu: 50, Paro: 100};
+var PRODUCTS = [
+ {id:1,n:"Tata salt, 1 kg",c:"Staples",p:15,i:"🧂",u:"pack"},
+ {id:2,n:"Refined oil, 1 L",c:"Staples",p:80,i:"🛢️",u:"litre"},
+ {id:3,n:"Dried Bhutanese chilli, 1 kg",c:"Spices",p:500,i:"🌶️",u:"kg"},
+ {id:4,n:"Dishwashing soap",c:"Household",p:150,i:"🧼",u:"bottle"},
+ {id:5,n:"Detergent",c:"Household",p:150,i:"🧺",u:"pack"},
+ {id:6,n:"Nescafé coffee, 50 g",c:"Drinks",p:50,i:"☕",u:"jar"},
+ {id:7,n:"Nescafé coffee, 100 g",c:"Drinks",p:100,i:"☕",u:"jar"},
+ {id:8,n:"Nescafé coffee, 200 g",c:"Drinks",p:200,i:"☕",u:"jar"}
+];
+// -----------------------------------
+var cart = {}, cat = "All", $ = function(s){return document.getElementById(s)};
+try{ cart = JSON.parse(localStorage.getItem("dbcart")||"{}") || {}; }catch(e){ cart = {}; }
+function save(){ try{ localStorage.setItem("dbcart", JSON.stringify(cart)); }catch(e){} }
+function nu(n){ return "Nu " + n.toLocaleString("en-US"); }
+function find(id){ return PRODUCTS.filter(function(p){return p.id==id})[0]; }
+function totals(){
+  var s=0,c=0; for(var id in cart){ var p=find(id); if(p){ s+=p.p*cart[id]; c+=cart[id]; } }
+  return {sub:s,count:c};
+}
+function cats(){ var a=["All"]; PRODUCTS.forEach(function(p){ if(a.indexOf(p.c)<0) a.push(p.c); }); return a; }
+function renderTabs(){
+  $("tabs").innerHTML = cats().map(function(c){ return '<button class="tab" aria-pressed="'+(c===cat)+'" data-c="'+c+'">'+c+'</button>'; }).join("");
+}
+function ctl(p){
+  if(p.out) return '<button class="add" disabled>Out of stock</button>';
+  var n = cart[p.id]||0;
+  if(!n) return '<button class="add" data-a="inc" data-id="'+p.id+'">Add</button>';
+  return '<div class="qty"><button data-a="dec" data-id="'+p.id+'" aria-label="Remove one">−</button><b>'+n+'</b><button data-a="inc" data-id="'+p.id+'" aria-label="Add one">+</button></div>';
+}
+function renderList(){
+  var q = $("q").value.trim().toLowerCase();
+  var rows = PRODUCTS.filter(function(p){ return (cat==="All"||p.c===cat) && p.n.toLowerCase().indexOf(q)>-1; });
+  $("list").innerHTML = rows.length ? rows.map(function(p){
+    return '<div class="item"><div class="ico" aria-hidden="true">'+p.i+'</div><div class="t"><b>'+p.n+'</b><small>'+nu(p.p)+' per '+p.u+'</small></div>'+ctl(p)+'</div>';
+  }).join("") : '<p>No products match “'+q.replace(/</g,"&lt;")+'”. Try another word or clear the search.</p>';
+}
+function renderBar(){
+  var t = totals();
+  $("open").disabled = !t.count;
+  $("cnt").textContent = t.count ? "View basket (" + t.count + ")" : "Your basket is empty";
+  $("sub").textContent = t.count ? nu(t.sub) : "";
+}
+function fee(sub){ return sub>=FREE_OVER ? 0 : FEES[$("town").value]; }
+function renderSheet(){
+  var t = totals(), f = fee(t.sub);
+  $("lines").innerHTML = Object.keys(cart).map(function(id){
+    var p=find(id); return '<div class="item"><div class="ico" aria-hidden="true">'+p.i+'</div><div class="t"><b>'+p.n+'</b><small>'+nu(p.p*cart[id])+'</small></div>'+ctl(p)+'</div>';
+  }).join("");
+  $("sums").innerHTML = '<div class="row"><span>Items</span><span>'+nu(t.sub)+'</span></div>'+
+    '<div class="row"><span>Delivery to '+$("town").value+'</span><span>'+(f?nu(f):"Free")+'</span></div>'+
+    '<div class="row total"><span>Total</span><span>'+nu(t.sub+f)+'</span></div>'+
+    (t.sub<MIN_ORDER?'<div class="err">Minimum order is '+nu(MIN_ORDER)+'. Add '+nu(MIN_ORDER-t.sub)+' more.</div>':'')+
+    (t.sub>=MIN_ORDER&&t.sub<FREE_OVER?'<small style="color:var(--mute)">Add '+nu(FREE_OVER-t.sub)+' more for free delivery.</small>':'');
+}
+function refresh(){ save(); renderList(); renderBar(); if($("sheet").classList.contains("open")){ if(!totals().count){ $("sheet").classList.remove("open"); } else renderSheet(); } }
+function change(e){
+  var b = e.target.closest("[data-a]"); if(!b) return;
+  var id=b.getAttribute("data-id"), a=b.getAttribute("data-a");
+  cart[id] = (cart[id]||0) + (a==="inc"?1:-1);
+  if(cart[id]<=0) delete cart[id];
+  refresh();
+}
+$("list").addEventListener("click", change);
+$("lines").addEventListener("click", change);
+$("tabs").addEventListener("click", function(e){ var b=e.target.closest("[data-c]"); if(b){ cat=b.getAttribute("data-c"); renderTabs(); renderList(); } });
+$("q").addEventListener("input", renderList);
+$("open").addEventListener("click", function(){ $("done").hidden=true; $("form").hidden=false; $("err").textContent=""; renderSheet(); $("sheet").classList.add("open"); $("sheet").scrollTop=0; });
+$("close").addEventListener("click", function(){ $("sheet").classList.remove("open"); });
+$("town").addEventListener("change", renderSheet);
+$("place").addEventListener("click", function(){
+  var t=totals(), f=fee(t.sub), name=$("name").value.trim(), ph=$("phone").value.replace(/\s/g,""), ad=$("addr").value.trim();
+  var msg = "";
+  if(t.sub<MIN_ORDER) msg="Minimum order is "+nu(MIN_ORDER)+".";
+  else if(!name) msg="Enter your name.";
+  else if(!/^\d{8}$/.test(ph.replace(/^\+?975/,""))) msg="Enter an 8-digit Bhutan phone number.";
+  else if(!ad) msg="Enter your delivery address.";
+  $("err").textContent = msg; if(msg) return;
+  var pay = document.querySelector('input[name=pay]:checked').value;
+  var lines = Object.keys(cart).map(function(id){ var p=find(id); return cart[id]+" x "+p.n+" – "+nu(p.p*cart[id]); });
+  var text = "New order\n"+lines.join("\n")+"\n\nItems: "+nu(t.sub)+"\nDelivery: "+(f?nu(f):"Free")+"\nTotal: "+nu(t.sub+f)+
+    "\n\nName: "+name+"\nPhone: "+ph+"\nTown: "+$("town").value+"\nAddress: "+ad+"\nSlot: "+$("slot").value+"\nPayment: "+pay;
+  $("summary").textContent = text;
+  $("wa").href = "https://wa.me/"+SHOP_WHATSAPP+"?text="+encodeURIComponent(text);
+  $("form").hidden=true; $("done").hidden=false; $("sheet").scrollTop=0;
+});
+$("again").addEventListener("click", function(){ cart={}; refresh(); $("sheet").classList.remove("open"); });
+renderTabs(); renderList(); renderBar();
+</script>
+</body>
+</html>
